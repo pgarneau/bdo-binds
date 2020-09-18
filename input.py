@@ -2,8 +2,6 @@ import pydirectinput
 import time
 import keyboard
 
-
-
 def pve():
     # Red rain + Dark Frenzy
     red_rain()
@@ -11,18 +9,27 @@ def pve():
     dark_frenzy()
     time.sleep(2.3)
 
+    if keyboard.is_pressed('f24'):
+        time.sleep(3)
+        return
+
     # Shadow Slash
     shadow_slash()
 
     # Ghost Greeting
     ghost_greeting()
 
+    if keyboard.is_pressed('f24'):
+        time.sleep(3)
+        return
+
     # Fatal Blow
     fatal_blow()
+    time.sleep(0.2)
 
     # Ankle Cutter
     ankle_cutter()
-    time.sleep(0.6)
+    time.sleep(0.65)
 
     # Malice
     malice()
