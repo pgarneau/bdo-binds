@@ -11,6 +11,11 @@ pydirectinput = "^1.0.2"
 keyboard = "^0.13.5"
 psutil = "5.7.2"
 pywin32 = "228"
+Pillow = "^7.1.0"
+pyscreenshot = "2.2"
+opencv-python = "4.4.0.44"
+d3dshot = "0.1.5"
+numpy = "1.19.2"
 
 [tool.poetry.dev-dependencies]
 

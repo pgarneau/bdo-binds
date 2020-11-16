@@ -1,77 +1,52 @@
 import pydirectinput
 import time
 import keyboard
-
-def pve():
-    # Red rain + Dark Frenzy
-    red_rain()
-    time.sleep(1.25)
-    dark_frenzy()
-    time.sleep(2.3)
-
-    if keyboard.is_pressed('f24'):
-        time.sleep(3)
-        return
-
-    # Shadow Slash
-    shadow_slash()
-
-    # Ghost Greeting
-    ghost_greeting()
-
-    if keyboard.is_pressed('f24'):
-        time.sleep(3)
-        return
-
-    # Fatal Blow
-    fatal_blow()
-    time.sleep(0.2)
-
-    # Ankle Cutter
-    ankle_cutter()
-    time.sleep(0.65)
-
-    # Malice
-    malice()
-
-    # Shadow Stomp
-    shadow_stomp()
-
-    # Shuriken Flight
-    shuriken_flight()
-    time.sleep(0.2)
-
-    evasive_malice_alert_stance()
-
-    beheading_the_dead()
-    time.sleep(0.9)
-
-    bladespin('1')
-    time.sleep(0.15)
-
-    fox_claw_moonlight()
-    time.sleep(0.1)
-
-    crescent_slash()
+import cooldown
 
 
-def test():
-    keyboard.send('s+e')
+current_bind = None
 
-def test2():
-    keyboard.send(31)
+def execute(instructions):
+    for i, instruction in enumerate(instructions):
+        if i >= 1 and keyboard.is_pressed(current_bind):
+            time.sleep(2)
+            return
+        
+        instruction()
 
-def dash(direction: str):
-    pydirectinput.keyDown('shift')
-    pydirectinput.keyDown(direction)
-    pydirectinput.keyUp('shift')
-    pydirectinput.keyUp(direction)
+def wait_for(skill):
+    while not cooldown.on_cooldown(skill):
+        if keyboard.is_pressed(current_bind):
+            break
+        pass
+        
+
+def pve(bind):
+    global current_bind
+    current_bind = bind
+
+    # cooldown.test_coords()
+    instructions = [
+        shadow_slash_greeting,
+        fatal_blow,
+        ankle_cutter,
+        malice_stomp,
+        shuriken_flight,
+        evasive_malice_beheading,
+        bladespin,
+        fox_claw_moonlight,
+        crescent_slash
+    ]
+    execute(instructions)
+
 
 def fatal_blow():
-    pydirectinput.mouseDown(button='left')
+    pydirectinput.mouseDown()
     pydirectinput.mouseDown(button='right')
-    time.sleep(0.3)
-    pydirectinput.mouseUp(button='left')
+
+    wait_for('fatal_blow')
+
+    pydirectinput.mouseUp()
     pydirectinput.mouseUp(button='right')
 
 def red_rain():
@@ -84,78 +59,95 @@ def dark_frenzy():
     pydirectinput.press('c')
     pydirectinput.keyUp('s')
 
-def shadow_slash():
-    pydirectinput.keyDown('d')
-    pydirectinput.leftClick()
-    pydirectinput.keyUp('d')
 
-def ghost_greeting():
-    pydirectinput.keyDown('shift')
-    pydirectinput.keyDown('w')
-    pydirectinput.leftClick()
-    pydirectinput.keyUp('shift')
-    pydirectinput.keyUp('w')
+def shadow_slash_greeting():
+    pydirectinput.mouseDown(button='left')
+    keyboard.send('d')
+    time.sleep(0.08)
+    keyboard.press('shift+w')
+    time.sleep(0.25)
+    keyboard.release('shift+w')
+
+
+def malice_stomp():
+    keyboard.press('q')
+
+    wait_for('malice')
+
+    keyboard.release('q')
+    keyboard.press('s+e')
+    time.sleep(0.3)
+    keyboard.release('s+e')
+
 
 def ankle_cutter():
-    pydirectinput.keyDown('shift')
-    pydirectinput.leftClick()
-    pydirectinput.keyUp('shift')
-    pydirectinput.mouseDown(button='right')
-    time.sleep(0.1)
-    pydirectinput.mouseUp(button='right')
+    keyboard.press('shift')
+    pydirectinput.mouseDown()
 
-def malice():
-    pydirectinput.keyDown('q')
-    pydirectinput.keyUp('q')
+    wait_for('ankle_cutter')
 
-def shadow_stomp():
-    pydirectinput.keyDown('s')
-    pydirectinput.keyDown('e')
-    pydirectinput.keyUp('s')
-    pydirectinput.keyUp('e')
+    keyboard.release('shift')
+    pydirectinput.mouseUp()
+    pydirectinput.rightClick()
+
 
 def shuriken_flight():
-    pydirectinput.keyDown('s')
-    pydirectinput.keyDown('q')
-    pydirectinput.keyUp('s')
-    pydirectinput.keyUp('q')
-    time.sleep(0.25)
-    pydirectinput.rightClick()
+    keyboard.press('s+q')
 
-def evasive_malice_alert_stance():
-    pydirectinput.keyDown('w')
-    pydirectinput.keyDown('q')
-    pydirectinput.keyUp('w')
-    pydirectinput.keyUp('q')
+    wait_for('shuriken_flight')
+
+    keyboard.release('s+q')
+    pydirectinput.mouseDown()
+    time.sleep(0.5)
+    pydirectinput.mouseUp()
+
+
+def evasive_malice_beheading():
+    keyboard.press('d+q')
+
+    wait_for('evasive_malice')
+
+    keyboard.release('d+q')
     pydirectinput.mouseDown(button='right')
-    time.sleep(0.1)
+    keyboard.press('shift+e')
+
+    wait_for('beheading_the_dead')
+
     pydirectinput.mouseUp(button='right')
+    keyboard.release('shift+e')
 
-def beheading_the_dead():
-    pydirectinput.keyDown('shift')
-    pydirectinput.keyDown('e')
-    pydirectinput.keyUp('shift')
-    pydirectinput.keyUp('e')
+def bladespin():
+    while not cooldown.on_cooldown('bladespin'):
+        if keyboard.is_pressed(current_bind):
+            break
 
-def bladespin(quickslot: str):
-    pydirectinput.keyDown(quickslot)
-    pydirectinput.keyUp(quickslot)
-    pydirectinput.keyDown('space')
-    time.sleep(0.2)
-    pydirectinput.keyUp('space')
+        keyboard.send('1')
+        time.sleep(0.15)
 
 def fox_claw_moonlight():
-    pydirectinput.keyDown('shift')
-    pydirectinput.rightClick()
-    pydirectinput.keyUp('shift')
-    pydirectinput.mouseDown(button='left')
-    time.sleep(0.8)
-    pydirectinput.mouseUp(button='left')
+    keyboard.press('shift')
+    pydirectinput.mouseDown(button='right')
+
+    wait_for('fox_claw')
+
+    keyboard.release('shift')
+    pydirectinput.mouseUp(button='right')
+    pydirectinput.mouseDown()
+
+    wait_for('moonlight')
+
+    pydirectinput.mouseUp()
+
 
 def crescent_slash():
-    pydirectinput.keyDown('s')
-    pydirectinput.leftClick()
-    pydirectinput.keyUp('s')
+    keyboard.press('s')
+    pydirectinput.mouseDown()
+
+    wait_for('crescent_slash')
+
+    keyboard.release('s')
+    pydirectinput.mouseUp()
     pydirectinput.mouseDown(button='right')
     time.sleep(0.4)
     pydirectinput.mouseUp(button='right')
+
